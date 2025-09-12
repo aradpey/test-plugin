@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Cover Letter Generator</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <!-- Main popup container -->
+    <div class="popup-container">
+      <!-- Header section with icon and title -->
+      <div class="popup-header">
+        <img src="icons/icon48.png" alt="Extension Icon" class="popup-icon" />
+        <h1 class="popup-title">AI Cover Letter Generator</h1>
+      </div>
+
+      <!-- Main content area -->
+      <div class="popup-content">
+        <!-- Instructions section -->
+        <div class="popup-section">
+          <h3>How to use:</h3>
+          <ol class="popup-instructions">
+            <li>Visit any job posting website</li>
+            <li>Select job description text</li>
+            <li>Right-click and choose "🤖 Extract Job Info"</li>
+            <li>Generate your cover letter!</li>
+          </ol>
+        </div>
+
+        <!-- Settings section -->
+        <div class="popup-section">
+          <h3>Settings</h3>
+          <div class="popup-setting">
+            <label class="popup-checkbox">
+              <input type="checkbox" id="autoExtract" checked />
+              <span class="checkmark"></span>
+              Auto-detect job text
+            </label>
+          </div>
+
+          <div class="popup-setting">
+            <label class="popup-checkbox">
+              <input type="checkbox" id="showNotifications" checked />
+              <span class="checkmark"></span>
+              Show notifications
+            </label>
+          </div>
+        </div>
+
+        <!-- Quick actions section -->
+        <div class="popup-section">
+          <h3>Quick Actions</h3>
+          <button class="popup-btn popup-btn-primary" id="openWebApp">
+            Open Web App
+          </button>
+          <button class="popup-btn popup-btn-secondary" id="viewHistory">
+            View History
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer with version info -->
+      <div class="popup-footer">
+        <p class="popup-version">Version 1.0.0</p>
+      </div>
+    </div>
+
+    <!-- Load the popup script -->
+    <script src="popup.js"></script>
+  </body>
+</html>

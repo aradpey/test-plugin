@@ -1,0 +1,35 @@
+{
+  "name": "ai-cover-letter-generator-extension",
+  "version": "1.0.0",
+  "description": "Browser extension for AI-powered cover letter generation from job postings",
+  "main": "background.js",
+  "scripts": {
+    "test": "node test.js",
+    "build": "echo 'No build process needed for Chrome extension'",
+    "lint": "echo 'Add ESLint configuration if needed'"
+  },
+  "keywords": [
+    "browser-extension",
+    "chrome-extension",
+    "ai",
+    "cover-letter",
+    "job-extraction",
+    "automation"
+  ],
+  "author": "AI Cover Letter Generator Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ai-cover-letter-generator-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/ai-cover-letter-generator-extension/issues"
+  },
+  "homepage": "https://github.com/your-username/ai-cover-letter-generator-extension#readme",
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
