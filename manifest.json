@@ -37,6 +37,16 @@
     }
   },
 
+  "commands": {
+    "extract-job": {
+      "suggested_key": {
+        "default": "Alt+Shift+U",
+        "mac": "Alt+Shift+U"
+      },
+      "description": "Extract job information from selected text"
+    }
+  },
+
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

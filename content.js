@@ -36,10 +36,49 @@ class JobExtractor {
       console.log(
         "Hide UI message received (no UI to hide in right-click mode)"
       );
+    } else if (message.action === "getSelectedText") {
+      // Handle request to get currently selected text (for keyboard shortcut)
+      const selectedText = this.getSelectedText();
+      sendResponse({ selectedText: selectedText });
+      return; // Return early to avoid sending duplicate response
     }
 
     // Always send a response to acknowledge message receipt
     sendResponse({ received: true });
+  }
+
+  /**
+   * Get the currently selected text on the page
+   * Used by keyboard shortcut to extract job information
+   * @returns {string|null} Selected text or null if nothing is selected
+   */
+  getSelectedText() {
+    try {
+      // Get the current selection
+      const selection = window.getSelection();
+
+      if (!selection || selection.rangeCount === 0) {
+        console.log("No text selected");
+        return null;
+      }
+
+      // Get the selected text
+      const selectedText = selection.toString().trim();
+
+      if (!selectedText || selectedText.length === 0) {
+        console.log("Selected text is empty");
+        return null;
+      }
+
+      console.log(
+        "Selected text found:",
+        selectedText.substring(0, 100) + "..."
+      );
+      return selectedText;
+    } catch (error) {
+      console.error("Error getting selected text:", error);
+      return null;
+    }
   }
 }
 

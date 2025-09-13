@@ -15,7 +15,7 @@ class JobExtractionService {
 
   /**
    * Initialize the background service
-   * Sets up all event listeners and context menu
+   * Sets up all event listeners, context menu, and keyboard shortcuts
    */
   init() {
     // Listen for messages from content scripts
@@ -27,6 +27,11 @@ class JobExtractionService {
     // Listen for context menu clicks
     browser.contextMenus.onClicked.addListener(
       this.handleContextMenuClick.bind(this)
+    );
+
+    // Listen for keyboard shortcut commands
+    browser.commands.onCommand.addListener(
+      this.handleKeyboardShortcut.bind(this)
     );
 
     console.log("AI Cover Letter Generator background service initialized");
@@ -66,41 +71,55 @@ class JobExtractionService {
   async handleContextMenuClick(info, tab) {
     // Check if the clicked menu item is our job extraction item
     if (info.menuItemId === "extractJob" && info.selectionText) {
+      await this.processJobExtraction(info.selectionText, tab.url, tab.title);
+    }
+  }
+
+  /**
+   * Handle keyboard shortcut commands
+   * Processes the job extraction when user presses the keyboard shortcut
+   * @param {string} command - The command that was triggered
+   */
+  async handleKeyboardShortcut(command) {
+    // Check if the command is our job extraction shortcut
+    if (command === "extract-job") {
       try {
-        console.log(
-          "Job extraction requested for text:",
-          info.selectionText.substring(0, 100) + "..."
-        );
+        console.log("Keyboard shortcut triggered for job extraction");
 
-        // Extract job information from selected text
-        const result = await this.extractJobInfo(
-          info.selectionText,
-          tab.url,
-          tab.title
-        );
+        // Get the currently active tab
+        const tabs = await browser.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        const activeTab = tabs[0];
 
-        if (result.success) {
-          // Show success notification with job title and company
-          const jobTitle = result.data.jobTitle || "Job";
-          const companyName = result.data.companyName || "Company";
+        if (!activeTab) {
+          throw new Error("No active tab found");
+        }
 
-          browser.notifications.create({
-            type: "basic",
-            iconUrl: "icons/icon48.png",
-            title: "Job Added Successfully!",
-            message: `${jobTitle} - ${companyName} added to your cover letter generator`,
-          });
+        // Send message to content script to get selected text
+        const response = await browser.tabs.sendMessage(activeTab.id, {
+          action: "getSelectedText",
+        });
+
+        if (response && response.selectedText) {
+          await this.processJobExtraction(
+            response.selectedText,
+            activeTab.url,
+            activeTab.title
+          );
         } else {
-          // Show error notification
+          // Show notification if no text is selected
           browser.notifications.create({
             type: "basic",
             iconUrl: "icons/icon48.png",
-            title: "Extraction Failed",
-            message: result.error || "Failed to extract job information",
+            title: "No Text Selected",
+            message:
+              "Please select some job-related text first, then use the keyboard shortcut",
           });
         }
       } catch (error) {
-        console.error("Context menu extraction failed:", error);
+        console.error("Keyboard shortcut extraction failed:", error);
 
         // Show error notification for unexpected errors
         browser.notifications.create({
@@ -110,6 +129,56 @@ class JobExtractionService {
           message: "An unexpected error occurred during extraction",
         });
       }
+    }
+  }
+
+  /**
+   * Process job extraction from selected text
+   * Common method used by both context menu and keyboard shortcut
+   * @param {string} selectedText - The text selected by the user
+   * @param {string} url - URL of the webpage
+   * @param {string} title - Title of the webpage
+   */
+  async processJobExtraction(selectedText, url, title) {
+    try {
+      console.log(
+        "Job extraction requested for text:",
+        selectedText.substring(0, 100) + "..."
+      );
+
+      // Extract job information from selected text
+      const result = await this.extractJobInfo(selectedText, url, title);
+
+      if (result.success) {
+        // Show success notification with job title and company
+        const jobTitle = result.data.jobTitle || "Job";
+        const companyName = result.data.companyName || "Company";
+
+        browser.notifications.create({
+          type: "basic",
+          iconUrl: "icons/icon48.png",
+          title: "Job Added Successfully!",
+          message: `${jobTitle} - ${companyName} added to your cover letter generator`,
+        });
+      } else {
+        // Show error notification
+        browser.notifications.create({
+          type: "basic",
+          iconUrl: "icons/icon48.png",
+          title: "Extraction Failed",
+          message: result.error || "Failed to extract job information",
+        });
+      }
+    } catch (error) {
+      console.error("Job extraction failed:", error);
+
+      // Show error notification for unexpected errors
+      browser.notifications.create({
+        type: "basic",
+        iconUrl: "icons/icon48.png",
+        title: "Extraction Error",
+        message: "An unexpected error occurred during extraction",
+      });
     }
   }
 
