@@ -10,7 +10,7 @@
     "tabs",
     "contextMenus",
     "notifications",
-    "https://freecov.vercel.app/*",
+    "https://localhost:3000/*",
     "<all_urls>"
   ],
 

@@ -7,7 +7,7 @@
 class JobExtractionService {
   constructor() {
     // Set the API base URL - your actual Vercel app URL
-    this.apiBaseUrl = "https://freecov.vercel.app";
+    this.apiBaseUrl = "https://localhost:3000";
 
     // Initialize the service
     this.init();

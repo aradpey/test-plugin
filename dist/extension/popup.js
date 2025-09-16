@@ -100,7 +100,7 @@ class PopupManager {
     try {
       // Get the API base URL from settings
       const settings = await browser.storage.sync.get(["apiBaseUrl"]);
-      const webAppUrl = settings.apiBaseUrl || "https://freecov.vercel.app";
+      const webAppUrl = settings.apiBaseUrl || "https://localhost:3000";
 
       // Open web app in new tab
       await browser.tabs.create({

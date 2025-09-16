@@ -4,7 +4,7 @@
  */
 
 class APIClient {
-  constructor(baseUrl = "https://freecov.vercel.app") {
+  constructor(baseUrl = "https://localhost:3000") {
     // Set the base URL for API calls
     this.baseUrl = baseUrl;
   }
