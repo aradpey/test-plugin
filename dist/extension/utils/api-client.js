@@ -10,6 +10,22 @@ class APIClient {
   }
 
   /**
+   * Get the current API base URL from browser storage
+   * Falls back to default if no custom URL is configured
+   * @returns {Promise<string>} The configured API base URL
+   */
+  async getBaseUrl() {
+    try {
+      // Get the API base URL from browser storage
+      const settings = await browser.storage.sync.get(["apiBaseUrl"]);
+      return settings.apiBaseUrl || this.baseUrl;
+    } catch (error) {
+      console.error("Failed to get API base URL from storage:", error);
+      return this.baseUrl;
+    }
+  }
+
+  /**
    * Send job information to web app for auto-population
    * Sends the full selected text to the web app API for processing and auto-filling
    * @param {string} text - Full selected text from the webpage
@@ -24,7 +40,11 @@ class APIClient {
         text.substring(0, 100) + "..."
       );
 
-      const response = await fetch(`${this.baseUrl}/api/auto-populate-job`, {
+      // Get the current API base URL from storage
+      const baseUrl = await this.getBaseUrl();
+      console.log("Using API base URL:", baseUrl);
+
+      const response = await fetch(`${baseUrl}/api/auto-populate-job`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +81,11 @@ class APIClient {
     try {
       console.log("Performing API health check...");
 
-      const response = await fetch(`${this.baseUrl}/api/health`, {
+      // Get the current API base URL from storage
+      const baseUrl = await this.getBaseUrl();
+      console.log("Health check using API base URL:", baseUrl);
+
+      const response = await fetch(`${baseUrl}/api/health`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

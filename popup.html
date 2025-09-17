@@ -31,6 +31,30 @@
         <!-- Settings section -->
         <div class="popup-section">
           <h3>Settings</h3>
+
+          <!-- API Domain Configuration -->
+          <div class="popup-setting">
+            <label for="apiDomain" class="popup-label">API Domain:</label>
+            <div class="popup-input-group">
+              <input
+                type="text"
+                id="apiDomain"
+                class="popup-input"
+                placeholder="https://localhost:3000"
+                title="Enter the domain where your web application is hosted"
+              />
+              <button
+                type="button"
+                id="testConnection"
+                class="popup-btn-test"
+                title="Test connection to the API"
+              >
+                Test
+              </button>
+            </div>
+            <div id="connectionStatus" class="popup-status"></div>
+          </div>
+
           <div class="popup-setting">
             <label class="popup-checkbox">
               <input type="checkbox" id="autoExtract" checked />

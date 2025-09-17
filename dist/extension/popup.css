@@ -80,6 +80,86 @@ body {
   margin-bottom: 12px;
 }
 
+/* Input field styling */
+.popup-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.popup-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.popup-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.popup-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.popup-input::placeholder {
+  color: #9ca3af;
+}
+
+.popup-btn-test {
+  padding: 8px 12px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.popup-btn-test:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.popup-btn-test:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Connection status styling */
+.popup-status {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 16px;
+}
+
+.popup-status.success {
+  color: #059669;
+}
+
+.popup-status.error {
+  color: #dc2626;
+}
+
+.popup-status.loading {
+  color: #3b82f6;
+}
+
 /* Custom checkbox styling */
 .popup-checkbox {
   display: flex;

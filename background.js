@@ -6,11 +6,27 @@
 
 class JobExtractionService {
   constructor() {
-    // Set the API base URL - your actual Vercel app URL
+    // Set the default API base URL - will be overridden by user settings
     this.apiBaseUrl = "https://localhost:3000";
 
     // Initialize the service
     this.init();
+  }
+
+  /**
+   * Get the current API base URL from browser storage
+   * Falls back to default if no custom URL is configured
+   * @returns {Promise<string>} The configured API base URL
+   */
+  async getApiBaseUrl() {
+    try {
+      // Get the API base URL from browser storage
+      const settings = await browser.storage.sync.get(["apiBaseUrl"]);
+      return settings.apiBaseUrl || this.apiBaseUrl;
+    } catch (error) {
+      console.error("Failed to get API base URL from storage:", error);
+      return this.apiBaseUrl;
+    }
   }
 
   /**
@@ -262,7 +278,11 @@ class JobExtractionService {
    * @returns {Object} API response with job data
    */
   async sendJobToWebApp(text, url, title) {
-    const response = await fetch(`${this.apiBaseUrl}/api/auto-populate-job`, {
+    // Get the current API base URL from storage
+    const apiBaseUrl = await this.getApiBaseUrl();
+    console.log("Sending job to web app using API base URL:", apiBaseUrl);
+
+    const response = await fetch(`${apiBaseUrl}/api/auto-populate-job`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

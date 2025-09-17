@@ -10,7 +10,6 @@
     "tabs",
     "contextMenus",
     "notifications",
-    "https://localhost:3000/*",
     "<all_urls>"
   ],
 
@@ -34,6 +33,16 @@
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
+    }
+  },
+
+  "commands": {
+    "extract-job": {
+      "suggested_key": {
+        "default": "Alt+Shift+U",
+        "mac": "Alt+Shift+U"
+      },
+      "description": "Extract job information from selected text"
     }
   },
 
