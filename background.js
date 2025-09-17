@@ -6,34 +6,19 @@
 
 class JobExtractionService {
   constructor() {
-    // Set the default API base URL - will be overridden by user settings
-    this.apiBaseUrl = "https://localhost:3000";
-
-    // Initialize the service
+    // Initialize the service - API base URL will be loaded from settings
+    this.apiBaseUrl = null;
     this.init();
-  }
-
-  /**
-   * Get the current API base URL from browser storage
-   * Falls back to default if no custom URL is configured
-   * @returns {Promise<string>} The configured API base URL
-   */
-  async getApiBaseUrl() {
-    try {
-      // Get the API base URL from browser storage
-      const settings = await browser.storage.sync.get(["apiBaseUrl"]);
-      return settings.apiBaseUrl || this.apiBaseUrl;
-    } catch (error) {
-      console.error("Failed to get API base URL from storage:", error);
-      return this.apiBaseUrl;
-    }
   }
 
   /**
    * Initialize the background service
    * Sets up all event listeners, context menu, and keyboard shortcuts
    */
-  init() {
+  async init() {
+    // Load API base URL from settings
+    await this.loadAPISettings();
+
     // Listen for messages from content scripts
     browser.runtime.onMessage.addListener(this.handleMessage.bind(this));
 
@@ -50,7 +35,28 @@ class JobExtractionService {
       this.handleKeyboardShortcut.bind(this)
     );
 
-    console.log("AI Cover Letter Generator background service initialized");
+    console.log(
+      "AI Cover Letter Generator background service initialized with API URL:",
+      this.apiBaseUrl
+    );
+  }
+
+  /**
+   * Load API settings from Firefox storage
+   * Retrieves the configured API base URL for making requests
+   */
+  async loadAPISettings() {
+    try {
+      // Get the API base URL from settings, fallback to default if not set
+      const settings = await browser.storage.sync.get(["apiBaseUrl"]);
+      this.apiBaseUrl = settings.apiBaseUrl || "https://localhost:3000";
+
+      console.log("API settings loaded:", this.apiBaseUrl);
+    } catch (error) {
+      console.error("Failed to load API settings:", error);
+      // Use default URL if loading fails
+      this.apiBaseUrl = "https://localhost:3000";
+    }
   }
 
   /**
@@ -278,11 +284,10 @@ class JobExtractionService {
    * @returns {Object} API response with job data
    */
   async sendJobToWebApp(text, url, title) {
-    // Get the current API base URL from storage
-    const apiBaseUrl = await this.getApiBaseUrl();
-    console.log("Sending job to web app using API base URL:", apiBaseUrl);
+    // Ensure we have the latest API settings before making the request
+    await this.loadAPISettings();
 
-    const response = await fetch(`${apiBaseUrl}/api/auto-populate-job`, {
+    const response = await fetch(`${this.apiBaseUrl}/api/auto-populate-job`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

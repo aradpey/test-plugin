@@ -10,7 +10,9 @@
     "tabs",
     "contextMenus",
     "notifications",
-    "<all_urls>"
+    "<all_urls>",
+    "http://localhost/*",
+    "https://localhost/*"
   ],
 
   "content_scripts": [
@@ -50,5 +52,11 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "aicover-extension@example.com",
+      "strict_min_version": "91.0"
+    }
   }
 }

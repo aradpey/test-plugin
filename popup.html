@@ -32,7 +32,7 @@
         <div class="popup-section">
           <h3>Settings</h3>
 
-          <!-- API Domain Configuration -->
+          <!-- API Domain Input -->
           <div class="popup-setting">
             <label for="apiDomain" class="popup-label">API Domain:</label>
             <div class="popup-input-group">
@@ -41,15 +41,15 @@
                 id="apiDomain"
                 class="popup-input"
                 placeholder="https://localhost:3000"
-                title="Enter the domain where your web application is hosted"
+                title="Enter the base URL for your API server (e.g., https://localhost:3000 or https://your-domain.com)"
               />
               <button
                 type="button"
-                id="testConnection"
+                id="saveApiDomain"
                 class="popup-btn-test"
-                title="Test connection to the API"
+                title="Save API domain"
               >
-                Test
+                Save
               </button>
             </div>
             <div id="connectionStatus" class="popup-status"></div>

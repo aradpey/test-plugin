@@ -103,7 +103,7 @@ body {
   font-size: 13px;
   color: #374151;
   background: white;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .popup-input:focus {
@@ -158,6 +158,11 @@ body {
 
 .popup-status.loading {
   color: #3b82f6;
+}
+
+.popup-status::before {
+  content: "●";
+  margin-right: 4px;
 }
 
 /* Custom checkbox styling */

@@ -4,24 +4,27 @@
  */
 
 class APIClient {
-  constructor(baseUrl = "https://localhost:3000") {
-    // Set the base URL for API calls
+  constructor(baseUrl = null) {
+    // Set the base URL for API calls - will be loaded from settings if not provided
     this.baseUrl = baseUrl;
   }
 
   /**
-   * Get the current API base URL from browser storage
-   * Falls back to default if no custom URL is configured
-   * @returns {Promise<string>} The configured API base URL
+   * Load API base URL from Firefox storage
+   * Retrieves the configured API base URL for making requests
    */
-  async getBaseUrl() {
+  async loadAPISettings() {
     try {
-      // Get the API base URL from browser storage
+      // Get the API base URL from settings, fallback to default if not set
       const settings = await browser.storage.sync.get(["apiBaseUrl"]);
-      return settings.apiBaseUrl || this.baseUrl;
+      this.baseUrl =
+        this.baseUrl || settings.apiBaseUrl || "https://localhost:3000";
+
+      console.log("API Client settings loaded:", this.baseUrl);
     } catch (error) {
-      console.error("Failed to get API base URL from storage:", error);
-      return this.baseUrl;
+      console.error("Failed to load API settings:", error);
+      // Use default URL if loading fails
+      this.baseUrl = this.baseUrl || "https://localhost:3000";
     }
   }
 
@@ -35,16 +38,15 @@ class APIClient {
    */
   async sendJobToWebApp(text, url, title) {
     try {
+      // Ensure we have the latest API settings before making the request
+      await this.loadAPISettings();
+
       console.log(
         "Sending job to web app for auto-population:",
         text.substring(0, 100) + "..."
       );
 
-      // Get the current API base URL from storage
-      const baseUrl = await this.getBaseUrl();
-      console.log("Using API base URL:", baseUrl);
-
-      const response = await fetch(`${baseUrl}/api/auto-populate-job`, {
+      const response = await fetch(`${this.baseUrl}/api/auto-populate-job`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,13 +81,12 @@ class APIClient {
    */
   async healthCheck() {
     try {
+      // Ensure we have the latest API settings before making the request
+      await this.loadAPISettings();
+
       console.log("Performing API health check...");
 
-      // Get the current API base URL from storage
-      const baseUrl = await this.getBaseUrl();
-      console.log("Health check using API base URL:", baseUrl);
-
-      const response = await fetch(`${baseUrl}/api/health`, {
+      const response = await fetch(`${this.baseUrl}/api/health`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

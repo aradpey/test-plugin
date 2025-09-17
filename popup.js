@@ -43,7 +43,7 @@ class PopupManager {
       document.getElementById("showNotifications").checked =
         settings.showNotifications !== false;
 
-      // Load API domain setting with default fallback
+      // Set the API domain input field with the saved URL or default
       const apiDomainInput = document.getElementById("apiDomain");
       apiDomainInput.value = settings.apiBaseUrl || "https://localhost:3000";
 
@@ -73,23 +73,23 @@ class PopupManager {
         this.saveSetting("showNotifications", e.target.checked);
       });
 
-    // API domain input - save changes when user finishes typing
-    const apiDomainInput = document.getElementById("apiDomain");
-    let domainTimeout;
-    apiDomainInput.addEventListener("input", (e) => {
-      // Clear previous timeout to debounce the input
-      clearTimeout(domainTimeout);
-
-      // Set a new timeout to save the setting after user stops typing
-      domainTimeout = setTimeout(() => {
-        this.saveApiDomain(e.target.value);
-      }, 1000); // Wait 1 second after user stops typing
-    });
-
-    // Test connection button
-    document.getElementById("testConnection").addEventListener("click", () => {
-      this.testApiConnection();
-    });
+    // Save button - saves domain immediately on click
+    document
+      .getElementById("saveApiDomain")
+      .addEventListener("click", async () => {
+        const input = document.getElementById("apiDomain");
+        const domain = input.value.trim();
+        if (!domain) {
+          this.showConnectionStatus("error", "Please enter a domain");
+          return;
+        }
+        try {
+          await this.saveSetting("apiBaseUrl", domain);
+          this.showConnectionStatus("success", "Saved");
+        } catch (e) {
+          this.showConnectionStatus("error", "Failed to save");
+        }
+      });
 
     // Action buttons
     document.getElementById("openWebApp").addEventListener("click", () => {
@@ -115,120 +115,26 @@ class PopupManager {
     }
   }
 
-  /**
-   * Save API domain setting to Firefox storage
-   * Validates the URL format before saving
-   * @param {string} domain - The API domain URL to save
-   */
-  async saveApiDomain(domain) {
-    try {
-      // Validate URL format
-      if (domain && domain.trim()) {
-        // Ensure the URL has a protocol
-        let formattedDomain = domain.trim();
-        if (
-          !formattedDomain.startsWith("http://") &&
-          !formattedDomain.startsWith("https://")
-        ) {
-          formattedDomain = "https://" + formattedDomain;
-        }
-
-        // Basic URL validation
-        try {
-          new URL(formattedDomain);
-          await this.saveSetting("apiBaseUrl", formattedDomain);
-          console.log(`API domain saved: ${formattedDomain}`);
-        } catch (urlError) {
-          console.error("Invalid URL format:", formattedDomain);
-          this.showConnectionStatus("Invalid URL format", "error");
-        }
-      } else {
-        // If empty, set default
-        await this.saveSetting("apiBaseUrl", "https://localhost:3000");
-        console.log("API domain reset to default");
-      }
-    } catch (error) {
-      console.error("Failed to save API domain:", error);
-    }
-  }
+  // testAPIConnection removed per request; Save button persists domain
 
   /**
-   * Test connection to the configured API domain
-   * Performs a health check to verify the API is accessible
-   */
-  async testApiConnection() {
-    const testButton = document.getElementById("testConnection");
-    const statusDiv = document.getElementById("connectionStatus");
-    const domainInput = document.getElementById("apiDomain");
-
-    try {
-      // Get the current domain value
-      let domain = domainInput.value.trim();
-      if (!domain) {
-        domain = "https://localhost:3000";
-      }
-
-      // Ensure protocol is present
-      if (!domain.startsWith("http://") && !domain.startsWith("https://")) {
-        domain = "https://" + domain;
-      }
-
-      // Show loading state
-      testButton.disabled = true;
-      testButton.textContent = "Testing...";
-      this.showConnectionStatus("Testing connection...", "loading");
-
-      // Perform health check
-      const response = await fetch(`${domain}/api/health`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // Add timeout to prevent hanging
-        signal: AbortSignal.timeout(5000),
-      });
-
-      if (response.ok) {
-        this.showConnectionStatus("✓ Connection successful!", "success");
-        console.log("API connection test successful");
-      } else {
-        this.showConnectionStatus(
-          `✗ Connection failed: ${response.status}`,
-          "error"
-        );
-        console.error("API connection test failed:", response.status);
-      }
-    } catch (error) {
-      if (error.name === "TimeoutError") {
-        this.showConnectionStatus("✗ Connection timeout", "error");
-      } else {
-        this.showConnectionStatus("✗ Connection failed", "error");
-      }
-      console.error("API connection test error:", error);
-    } finally {
-      // Reset button state
-      testButton.disabled = false;
-      testButton.textContent = "Test";
-    }
-  }
-
-  /**
-   * Show connection status message in the UI
-   * @param {string} message - Status message to display
+   * Show connection status message with appropriate styling
    * @param {string} type - Status type: 'success', 'error', or 'loading'
+   * @param {string} message - Status message to display
    */
-  showConnectionStatus(message, type) {
+  showConnectionStatus(type, message) {
     const statusDiv = document.getElementById("connectionStatus");
-    statusDiv.textContent = message;
     statusDiv.className = `popup-status ${type}`;
+    statusDiv.textContent = message;
+  }
 
-    // Auto-hide success messages after 3 seconds
-    if (type === "success") {
-      setTimeout(() => {
-        statusDiv.textContent = "";
-        statusDiv.className = "popup-status";
-      }, 3000);
-    }
+  /**
+   * Clear the connection status message
+   */
+  clearConnectionStatus() {
+    const statusDiv = document.getElementById("connectionStatus");
+    statusDiv.className = "popup-status";
+    statusDiv.textContent = "";
   }
 
   /**
